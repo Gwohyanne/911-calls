@@ -21,8 +21,73 @@ GET <nom de votre index>/_count
 
 À vous de jouer ! Écrivez les requêtes ElasticSearch permettant de résoudre les problèmes posés.
 
-```
-TODO : ajouter les requêtes ElasticSearch ici
+``` 
+### Compter le nombre d'appels par catégorie
+
+POST 911-calls/_count
+{
+    "query": {
+        "wildcard": {
+           "title": {
+              "value": "EMS*"
+           }
+        }
+    }
+}
+
+### Trouver les 3 mois ayant comptabilisés le plus d'appels
+
+POST 911-calls/_search
+{
+  "size": 0,
+    "aggs" : {
+        "months" : {
+            "terms": {
+                "field": "month"
+                "order": { "_count": "desc" }
+            }
+        }
+    }
+}
+
+### Trouver le top 3 des villes avec le plus d'appels pour overdose
+
+POST 911-calls/_search
+{
+  "query": {
+    "wildcard": {
+      "title": {
+        "value": "*OVERDOSE*"
+      }
+    }
+  },
+    "aggs" : {
+          "overdose" : {
+              "terms": {
+                  "field": "twp"
+              }
+          }
+      }
+}
+
+### Compter le nombre d'appels autour de Lansdale dans un rayon de 500 mètres
+
+POST 911-calls/_count
+{
+    "filtered" : {
+        "query" : {
+            "match_all" : {}
+        },
+        "filter" : {
+            "geo_distance" : {
+                "distance" : "0.5km",
+                "loc" : "40.2534732, -75.283245" 
+                }
+            }
+        }
+    }
+}
+
 ```
 
 ## Kibana
