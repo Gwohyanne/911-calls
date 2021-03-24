@@ -32,7 +32,63 @@ Afin de répondre aux différents problèmes, vous allez avoir besoin de créer 
 À vous de jouer ! Écrivez les requêtes MongoDB permettant de résoudre les problèmes posés.
 
 ```
-TODO : ajouter les requêtes MongoDB ici
+### Compter le nombre d'appels par catégorie
+
+db.calls.aggregate(
+   [
+     { $match: { $text: { $search: "EMS" } } },
+     { $count : " ems "}
+   ]
+)
+
+### Trouver les 3 mois ayant comptabilisé le plus d'appels
+
+db.calls.aggregate(
+   [
+     { $sortByCount : "$month"}
+   ]
+)
+
+### Trouver le top 3 des villes avec le plus d'appels pour overdose
+
+db.calls.aggregate(
+   [
+	{ $match: { $text: { $search: "overdose" } } },
+	{ $sortByCount: "$twp"}
+   ]
+)
+
+### Compter le nombre d'appels autour de Lansdale dans un rayon de 500 mètres
+
+db.calls.aggregate(
+   [
+	{ $geoNear: 
+                {near :
+                  
+                    { type : "Point" ,
+                      coordinates : [-75.283245, 40.2534732 ]
+                      } ,
+                  
+                distanceField: "dist",
+                maxDistance: 500,
+                }
+              
+  },
+	{ $count : "Close to Lansdale"}
+   ]
+)
+
+db.calls.find( { loc :
+                { $near :
+                  { $geometry :
+                    { type : "Point" ,
+                      coordinates : [-75.283245, 40.2534732 ] } ,
+                    $maxDistance : 500
+                  }
+                }
+               }
+              ).count()
+
 ```
 
 Vous allez sûrement avoir besoin de vous inspirer des points suivants de la documentation :
